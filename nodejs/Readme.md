@@ -17,6 +17,7 @@ Enjoy!
 
 ### Features
 
+```
 POST /api/upload
 GET  /api/top-10
 GET  /api/bottom-50
@@ -25,3 +26,4 @@ GET  /api/income-inequality
 POST /api/saving-capacity
 POST /api/predict-wealth
 POST /api/predict-income
+```
