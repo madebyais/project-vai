@@ -1,0 +1,57 @@
+{
+  "POST /upload": [
+    "File.upload",
+    "File.checkCsv",
+    "File.convertToJson",
+    "Data.cleanCsv",
+    "Data.importFile",
+    "Response.json"
+  ],
+
+  "GET /top-10": [
+    "Data.checkQueryParams",
+    "Data.getIncomeAndWealth",
+    "Response.json"
+  ],
+
+  "GET /bottom-50": [
+    "Data.checkQueryParams",
+    "Data.getIncomeAndWealth",
+    "Response.json"
+  ],
+
+  "GET /wealth-inequality": [
+    "Data.checkQueryParams",
+    "Data.getIncomeAndWealth",
+    "Data.calculateGreatestCommonFactors",
+    "Response.json"
+  ],
+
+  "GET /income-inequality": [
+    "Data.checkQueryParams",
+    "Data.getIncomeAndWealth",
+    "Data.calculateGreatestCommonFactors",
+    "Response.json"
+  ],
+
+  "POST /saving-capacity": [
+    "Data.checkJsonParams",
+    "Data.getIncomeAndWealth",
+    "Data.savingCapacity",
+    "Response.json"
+  ],
+
+  "POST /predict-wealth": [
+    "Data.setInitAndEndYear",
+    "Data.getIncomeAndWealth",
+    "Data.predict",
+    "Response.json"
+  ],
+
+  "POST /predict-income": [
+    "Data.setInitAndEndYear",
+    "Data.getIncomeAndWealth",
+    "Data.predict",
+    "Response.json"
+  ]
+}

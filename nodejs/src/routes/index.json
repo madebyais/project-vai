@@ -1,0 +1,15 @@
+{
+  "GET /": [
+    "Data.getIncomeAndWealth",
+    "Page.homepage"
+  ],
+
+  "POST /upload": [
+    "File.upload",
+    "File.checkCsv",
+    "File.convertToJson",
+    "Data.cleanCsv",
+    "Data.importFile",
+    "Page.redirectHomepage"
+  ]
+}

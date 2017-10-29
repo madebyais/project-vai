@@ -1,0 +1,183 @@
+<!doctype>
+<html>
+  <head>
+    <title>INEQUALITY CALCULATOR</title>
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <style>
+      html, body { background: #293a46; padding: 20px 0; color: #fff; }
+
+      h6 { letter-spacing: .1em }
+      input, select { margin-bottom: 5px; }
+
+      #editor, #editor-result {
+        width: 100%;
+        height: 300px;
+        display: block;
+      }
+
+      #editor-result {
+        height: 490px;
+      }
+
+      pre {
+        color: #fff;
+        font-weight: bold;
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h4>INEQUALITY CALCULATOR</h4>
+        </div>
+      </div>
+      <br />
+      <br />
+      <div class="row">
+        <div class="col-md-3">
+          <h6>UPLOAD</h6>
+          <hr />
+          <small>CHOOSE A FILE:</small><br/>
+          <form action="/upload" method="POST" enctype="multipart/form-data">
+            <input type="file" name="csvfile" class="form-control" />
+            <input type="submit" class="btn btn-primary" value="Submit" />
+          </form>
+
+          <br/>
+
+          <small>INFO</small><br/>
+          <p>If the method is `GET` then the paramter should be (e.g.):</p>
+          <pre>
+?init=1970&end=1972
+          </pre>
+          <p>And if you are using `POST` method, then paramter should be e.g.:</p>
+          <pre>
+{
+  "init": 1970, "end": 1972
+}
+          </pre>
+        </br/>
+        </div>
+        <div class="col-md-3">
+          <h6>REQUEST FORM</h6>
+          <hr />
+
+          <small>METHOD</small><br/>
+          <select id="method" class="form-control">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+          </select>
+          <br/>
+
+          <small>API</small><br/>
+          <select id="api-path" class="form-control">
+            <option value="top-10">top-10</option>
+            <option value="bottom-50">bottom-50</option>
+            <option value="wealth-inequality">wealth-inequality</option>
+            <option value="income-inequality">income-inequality</option>
+            <option value="saving-capacity">saving-capacity</option>
+            <option value="predict-wealth">predict-wealth</option>
+            <option value="predict-income">predict-income</option>
+          </select>
+          <br/>
+
+          <small>PARAMETERS</small><br/>
+          <div id="editor"></div>
+
+          <input type="submit" class="btn btn-primary" value="Submit" onclick="submitApi();" />
+        </div>
+        <div class="col-md-6">
+          <h6>RESULT IN JSON</h6>
+          <hr />
+          <div id="editor-result"></div>
+        </div>
+      </div>
+    </div>
+
+
+    <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.2.9/ace.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.2.9/mode-javascript.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.2.9/theme-monokai.js"></script>
+    <script>
+      var editor, editorResult;
+      $(document).ready(function () {
+        editor = ace.edit("editor");
+        editor.setTheme("ace/theme/monokai");
+        editor.getSession().setMode("ace/mode/javascript");
+
+        editorResult = ace.edit("editor-result");
+        editorResult.setTheme("ace/theme/monokai");
+        editorResult.getSession().setMode("ace/mode/javascript");
+
+        if (getUrlVars()["status"])
+          alert('Upload success.');
+      });
+
+      function getUrlVars(){
+        var vars = [], hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for(var i = 0; i < hashes.length; i++)
+        {
+            hash = hashes[i].split('=');
+            vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
+        }
+        return vars;
+      }
+
+      var listPost = [
+        'saving-capacity',
+        'predict-wealth',
+        'predict-income'
+      ];
+
+      function submitApi() {
+        var method = $('#method').val();
+        var apiUrl = '/api/' + $('#api-path').val();
+        var params = editor.getValue();
+
+        if (method.toLowerCase() == 'get' && listPost.indexOf($('#api-path').val()) > -1)
+          return alert('Please use method POST for this API.')
+        else if (method.toLowerCase() == 'post' && listPost.indexOf($('#api-path').val()) == -1)
+          return alert('Please use method GET for this API.')
+
+        if (method.toLowerCase() == 'get') {
+          apiUrl = apiUrl + params;
+
+          $.ajax({
+            method: method,
+            url: apiUrl,
+            success: function (resp) {
+              editorResult.setValue(JSON.stringify(resp, null, '\t'))
+            },
+            error: function (a, b, c) {
+              editorResult.setValue(JSON.stringify(a.responseJSON, null, '\t'))
+            }
+          });
+        } else {
+          $.ajax({
+            method: method,
+            url: apiUrl,
+            data: JSON.parse(params),
+            success: function (resp) {
+              editorResult.setValue(JSON.stringify(resp, null, '\t'))
+            },
+            error: function (a, b, c) {
+              editorResult.setValue(JSON.stringify(a.responseJSON, null, '\t'))
+            }
+          });
+        }
+
+        console.dir(method);
+        console.dir(apiUrl)
+        console.dir(params)
+      }
+    </script>
+  </body>
+</html>

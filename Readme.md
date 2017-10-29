@@ -1,0 +1,2 @@
+PROJECT VAI - INEQUALITY CALCULATOR
+-----------------------------------
